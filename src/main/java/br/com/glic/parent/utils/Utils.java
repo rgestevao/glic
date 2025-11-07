@@ -4,7 +4,6 @@ import br.com.glic.parent.exceptions.GenericException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
 
