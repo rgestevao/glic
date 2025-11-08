@@ -1,16 +1,15 @@
 package br.com.glic.userservice.services;
 
 import br.com.glic.parent.utils.Utils;
-import br.com.glic.userservice.db.UserEntity;
 import br.com.glic.userservice.db.UserRepository;
 import br.com.glic.userservice.dto.CreateUserRequest;
 import br.com.glic.userservice.dto.CreateUserResponse;
+import br.com.glic.userservice.enums.AuthTypeEnum;
 import br.com.glic.userservice.mappers.UserMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,17 +19,15 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public CreateUserResponse create(CreateUserRequest request) {
         validateMandatoryFields(request);
-        validateUserEmailExists(request.email());
+        userRepository.findByEmail(request.email());
         var entity = userMapper.toEntity(request);
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+        entity.setProvider(AuthTypeEnum.LOCAL);
         var user = userRepository.save(entity);
         return userMapper.toResponse(user);
-    }
-
-    private Optional<UserEntity> validateUserEmailExists(String email) {
-        return userRepository.findByEmail(email);
     }
 
     private void validateMandatoryFields(CreateUserRequest request) {

@@ -41,15 +41,12 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Column
-    private String provider;
+    @Column(name = "provider", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AuthTypeEnum provider;
 
     @Column
     private String providerId;
-
-    @Column(name = "auth_type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private AuthTypeEnum authenticationType;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
