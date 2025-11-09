@@ -28,6 +28,9 @@ spring:
               - profile
               - email
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          google:
+            issuer-uri: https://accounts.google.com
 
 server:
   port: ${PORT_APP:8080}
