@@ -3,6 +3,7 @@ package br.com.glic.measureservice.services;
 import br.com.glic.measureservice.db.MeasureEntity;
 import br.com.glic.measureservice.db.MeasureRepository;
 import br.com.glic.measureservice.dto.CreateMeasureRequest;
+import br.com.glic.measureservice.dto.DeleteMeasureRequest;
 import br.com.glic.measureservice.dto.MeasureResponse;
 import br.com.glic.measureservice.dto.UpdateMeasureRequest;
 import br.com.glic.measureservice.enums.MeasureStatusEnum;
@@ -71,5 +72,19 @@ public class MeasureService {
         if (value < 70) return MeasureStatusEnum.LOW;
         if (value < 180) return MeasureStatusEnum.NORMAL;
         return MeasureStatusEnum.HIGH;
+    }
+
+    public void delete(DeleteMeasureRequest request) {
+        var measure = measureRepository.findById(request.measureId()).orElseThrow(() -> new GenericException(
+                HttpStatus.BAD_REQUEST,
+                "Measure not found",
+                OffsetDateTime.now()
+        ));
+        userRepository.findById(request.userId()).orElseThrow(() -> new GenericException(
+                HttpStatus.BAD_REQUEST,
+                "User not found",
+                OffsetDateTime.now()
+        ));
+        measureRepository.deleteById(measure.getMeasureId());
     }
 }
