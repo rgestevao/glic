@@ -1,2 +1,0 @@
-ALTER TABLE users
-DROP COLUMN IF EXISTS auth_type;
