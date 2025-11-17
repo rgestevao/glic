@@ -16,10 +16,10 @@ import type { SendEmailRequest, SendEmailResponse } from '../../types'
 
 export default function ForgotPassword() {
 	const navigation = useNavigation<any>()
-	const [to, setTo] = useState('')
+	const [email, setEmail] = useState('')
 	const [loading, setLoading] = useState(false)
 	const handleSendEmail = async () => {
-		if (!to) {
+		if (!email) {
 			Alert.alert('Atenção', 'Preencha o e-mail.')
 			return
 		}
@@ -27,9 +27,10 @@ export default function ForgotPassword() {
 		setLoading(true)
 		try {
 			const payload: SendEmailRequest = {
-				to,
+				email,
 			}
 			await api.post<SendEmailResponse>('/mail', payload)
+			navigation.navigate('UpdatePassword', { email })
 		} catch (error: any) {
 			console.log(error?.response?.data || error)
 			const message =
@@ -60,8 +61,8 @@ export default function ForgotPassword() {
 				placeholderTextColor={Colors.Grey300}
 				autoCapitalize="none"
 				keyboardType="email-address"
-				value={to}
-				onChangeText={setTo}
+				value={email}
+				onChangeText={setEmail}
 			/>
 
 			<Pressable style={styles.button} onPress={handleSendEmail}>

@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { useState } from 'react'
 import {
 	ActivityIndicator,
@@ -17,13 +17,25 @@ import type { UpdatePasswordRequest, UpdatePasswordResponse } from '../../types'
 
 export default function UpdatePassword() {
 	const navigation = useNavigation<any>()
+	const route = useRoute<any>()
+	const receivedEmail: string = route.params?.email ?? ''
 	const [password, setPassword] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('')
 	const [loading, setLoading] = useState(false)
+	const canSubmit =
+		password.length > 0 &&
+		confirmPassword.length > 0 &&
+		password === confirmPassword
 	const [showPassword, setShowPassword] = useState(false)
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 	const handleRegister = async () => {
 		if (!password || !confirmPassword) {
 			Alert.alert('Atenção', 'Preencha a senha e a confirmação de senha.')
+			return
+		}
+
+		if (password !== confirmPassword) {
+			Alert.alert('Atenção', 'As senhas não coincidem.')
 			return
 		}
 
@@ -31,11 +43,11 @@ export default function UpdatePassword() {
 
 		try {
 			const payload: UpdatePasswordRequest = {
-				newPassword: password,
-				email: '',
+				password: password,
+				email: receivedEmail,
 			}
 
-			await api.post<UpdatePasswordResponse>('/users', payload)
+			await api.put<UpdatePasswordResponse>('/users', payload)
 		} catch (error: any) {
 			console.log(error?.response?.data || error)
 			const message =
@@ -58,26 +70,6 @@ export default function UpdatePassword() {
 			<Text style={styles.title}>
 				Mais controle, mais liberdade. Comece agora.
 			</Text>
-
-			<Text style={styles.label}>Nome Completo</Text>
-			<TextInput
-				style={styles.input}
-				placeholder="Digite seu nome completo"
-				placeholderTextColor={Colors.Grey300}
-				value={password}
-				onChangeText={setPassword}
-			/>
-
-			<Text style={styles.label}>E-mail</Text>
-			<TextInput
-				style={styles.input}
-				placeholder="Digite seu e-mail"
-				placeholderTextColor={Colors.Grey300}
-				autoCapitalize="none"
-				keyboardType="email-address"
-				value={confirmPassword}
-				onChangeText={setConfirmPassword}
-			/>
 
 			<Text style={styles.label}>Senha</Text>
 			<View>
@@ -102,11 +94,41 @@ export default function UpdatePassword() {
 				</Pressable>
 			</View>
 
-			<Pressable style={styles.button} onPress={handleRegister}>
+			<Text style={styles.label}>Confirmar senha</Text>
+			<View>
+				<TextInput
+					style={styles.input}
+					placeholder="Digite sua senha"
+					secureTextEntry={!showConfirmPassword}
+					placeholderTextColor={Colors.Grey300}
+					value={confirmPassword}
+					onChangeText={setConfirmPassword}
+				/>
+
+				<Pressable
+					style={styles.icon}
+					onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+				>
+					<Feather
+						name={showConfirmPassword ? 'eye' : 'eye-off'}
+						size={24}
+						color={Colors.Black900}
+					/>
+				</Pressable>
+			</View>
+
+			<Pressable
+				style={[
+					styles.button,
+					(!canSubmit || loading) && styles.buttonDisabled,
+				]}
+				onPress={handleRegister}
+				disabled={!canSubmit || loading}
+			>
 				{loading ? (
 					<ActivityIndicator color={Colors.White100} />
 				) : (
-					<Text style={styles.textButton}>Cadastrar</Text>
+					<Text style={styles.textButton}>Atualizar Senha</Text>
 				)}
 			</Pressable>
 
@@ -178,6 +200,10 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		justifyContent: 'center',
 		alignItems: 'center',
+	},
+
+	buttonDisabled: {
+		backgroundColor: Colors.Grey300,
 	},
 
 	textButton: {

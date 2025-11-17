@@ -21,7 +21,7 @@ export interface RegisterResponse {
 }
 
 export interface SendEmailRequest {
-	to: string;
+	email: string;
 }
 
 export interface SendEmailResponse {
@@ -30,9 +30,9 @@ export interface SendEmailResponse {
 
 export interface UpdatePasswordRequest {
 	email: string;
-	newPassword: string;
+	password: string;
 }
 
 export interface UpdatePasswordResponse {
-	message: string;
+	userId: string;
 }
