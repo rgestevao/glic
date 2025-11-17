@@ -39,6 +39,7 @@ export default function Login() {
 			const response = await api.post<LoginResponse>('/auth/login', payload)
 			const data = response.data
 			await AsyncStorage.setItem('token', data.token)
+			navigation.navigate('Home')
 		} catch (error: any) {
 			console.log(error?.response?.data || error)
 			const message =
