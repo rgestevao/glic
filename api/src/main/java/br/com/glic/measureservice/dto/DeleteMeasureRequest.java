@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public record DeleteMeasureRequest(
         UUID measureId,
-        UUID userId
+        String email
 ) {
 }
