@@ -33,7 +33,7 @@ public class MeasureService {
 
     @Transactional
     public MeasureResponse create(CreateMeasureRequest request) {
-        var user = userRepository.findById(request.userId()).orElseThrow(() -> new GenericException(
+        var user = userRepository.findByEmail(request.email()).orElseThrow(() -> new GenericException(
                 HttpStatus.BAD_REQUEST,
                 "User not found",
                 OffsetDateTime.now()
