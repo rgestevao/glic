@@ -23,12 +23,6 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String from;
 
-    @Value("${app.mobile.port}")
-    private String mobilePort;
-
-    @Value("${app.host}")
-    private String host;
-
     private final JavaMailSender mailSender;
     private final UserRepository userRepository;
 
@@ -44,7 +38,7 @@ public class MailService {
             helper.setFrom(from);
             helper.setTo(request.email());
             helper.setSubject("Glic - Recovery Password");
-            String resetUrl = "http://" + host + ":" + mobilePort +"/updatePassword";
+            String resetUrl = "";
             String html = """
                     <html>
                       <body style="font-family: Arial, sans-serif; background-color: #f6f6f6; padding: 20px;">
