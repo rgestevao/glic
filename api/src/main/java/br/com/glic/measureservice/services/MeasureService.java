@@ -54,7 +54,7 @@ public class MeasureService {
                 "Measure not found",
                 OffsetDateTime.now()
         ));
-        var user = userRepository.findById(request.userId()).orElseThrow(() -> new GenericException(
+        var user = userRepository.findByEmail(request.email()).orElseThrow(() -> new GenericException(
                 HttpStatus.BAD_REQUEST,
                 "User not found",
                 OffsetDateTime.now()

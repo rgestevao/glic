@@ -7,6 +7,6 @@ public record UpdateMeasureRequest(
         UUID measureId,
         Integer value,
         OffsetDateTime offsetDateTime,
-        UUID userId
+        String email
 ) {
 }
