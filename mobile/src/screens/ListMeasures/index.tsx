@@ -1,13 +1,29 @@
 import { Feather } from '@expo/vector-icons'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
 	useNavigation,
 	useRoute,
 	type RouteProp,
 } from '@react-navigation/native'
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
+import { BlurView } from 'expo-blur'
+import { jwtDecode } from 'jwt-decode'
+import { useState } from 'react'
+import {
+	FlatList,
+	Modal,
+	Pressable,
+	StyleSheet,
+	Text,
+	View,
+} from 'react-native'
 import NavBar from '../../components/NavBar'
+import { api } from '../../services/api'
 import { Colors } from '../../styles/colors'
-import type { MeasureResponse } from '../../types'
+import type { DeleteMeasureRequest, MeasureResponse } from '../../types'
+
+type JwtPayload = {
+	sub: string
+}
 
 type ListMeasuresRouteProp = RouteProp<
 	{ ListMeasures: { measures: MeasureResponse[] } },
@@ -18,12 +34,60 @@ export default function ListMeasures() {
 	const route = useRoute<ListMeasuresRouteProp>()
 	const { measures } = route.params
 	const navigation = useNavigation<any>()
+	const [showDeleteModal, setShowDeleteModal] = useState(false)
+	const [measureToDelete, setMeasureToDelete] =
+		useState<MeasureResponse | null>(null)
+	const [listMeasures, setListMeasures] = useState<MeasureResponse[]>(measures)
+
+	const openDeleteModal = (measure: MeasureResponse) => {
+		setMeasureToDelete(measure)
+		setShowDeleteModal(true)
+	}
+
+	const closeDeleteModal = () => {
+		setShowDeleteModal(false)
+		setMeasureToDelete(null)
+	}
+
+	const handleConfirmDelete = async () => {
+		if (!measureToDelete) return
+
+		try {
+			const token = await AsyncStorage.getItem('token')
+			if (!token) {
+				console.warn('Token não encontrado')
+				return
+			}
+			const decoded = jwtDecode<JwtPayload>(token)
+			const email = decoded.sub
+			const payload: DeleteMeasureRequest = {
+				measureId: measureToDelete.measureId,
+				email,
+			}
+
+			await api.delete<any>('/measures', {
+				data: payload,
+				headers: {
+					Authorization: token ? `Bearer ${token}` : '',
+				},
+			})
+
+			setListMeasures((prev) =>
+				prev.filter((m) => m.measureId !== measureToDelete.measureId)
+			)
+			navigation.navigate('Home')
+		} catch (error: any) {
+			console.log(error?.response?.data || error)
+		} finally {
+			closeDeleteModal()
+		}
+	}
 
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Listagem de Medidas</Text>
 
-			{measures && measures.length > 0 ? (
+			{listMeasures && listMeasures.length > 0 ? (
 				<FlatList
 					data={measures}
 					keyExtractor={(item) => item.measureId}
@@ -53,7 +117,7 @@ export default function ListMeasures() {
 										<Text style={styles.measureValue}>{item.value} </Text>
 										<Text style={styles.unitText}>{unit}</Text>
 									</View>
-									<Pressable onPress={() => {}}>
+									<Pressable onPress={() => openDeleteModal(item)}>
 										<Feather
 											name={'trash-2'}
 											size={24}
@@ -116,6 +180,41 @@ export default function ListMeasures() {
 				<View style={styles.emptyContainer}>
 					<Text style={styles.emptyText}>Não há medições para hoje</Text>
 				</View>
+			)}
+			{showDeleteModal && (
+				<Modal
+					transparent
+					animationType="fade"
+					visible={showDeleteModal}
+					onRequestClose={closeDeleteModal}
+				>
+					<View style={styles.modalRoot}>
+						<BlurView
+							intensity={20}
+							tint="dark"
+							style={StyleSheet.absoluteFill}
+						/>
+						<View style={styles.modalCard}>
+							<Text style={styles.modalTitle}>Deseja remover a marcação?</Text>
+
+							<View style={styles.modalButtonsRow}>
+								<Pressable
+									style={[styles.modalButton, styles.modalCancelButton]}
+									onPress={closeDeleteModal}
+								>
+									<Text style={styles.modalCancelText}>Cancelar</Text>
+								</Pressable>
+
+								<Pressable
+									style={[styles.modalButton, styles.modalConfirmButton]}
+									onPress={handleConfirmDelete}
+								>
+									<Text style={styles.modalConfirmText}>Confirmar</Text>
+								</Pressable>
+							</View>
+						</View>
+					</View>
+				</Modal>
 			)}
 			<NavBar />
 		</View>
@@ -264,5 +363,60 @@ const styles = StyleSheet.create({
 		color: Colors.Black900,
 		fontSize: 18,
 		fontFamily: 'Sora_400Regular',
+	},
+	modalRoot: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+
+	modalCard: {
+		width: '80%',
+		backgroundColor: Colors.White100,
+		borderRadius: 16,
+		paddingVertical: 24,
+		paddingHorizontal: 16,
+		alignItems: 'center',
+	},
+
+	modalTitle: {
+		fontFamily: 'Sora_600SemiBold',
+		fontSize: 16,
+		color: Colors.Black900,
+		textAlign: 'center',
+		marginBottom: 20,
+	},
+
+	modalButtonsRow: {
+		flexDirection: 'row',
+		columnGap: 12,
+	},
+
+	modalButton: {
+		flex: 1,
+		height: 40,
+		borderRadius: 999,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+
+	modalCancelButton: {
+		backgroundColor: Colors.Red100,
+	},
+
+	modalConfirmButton: {
+		backgroundColor: Colors.Green100,
+	},
+
+	modalCancelText: {
+		color: Colors.White100,
+		fontFamily: 'Sora_600SemiBold',
+		fontSize: 14,
+	},
+
+	modalConfirmText: {
+		color: Colors.White100,
+		fontFamily: 'Sora_600SemiBold',
+		fontSize: 14,
 	},
 })

@@ -70,3 +70,8 @@ export interface UpdateMeasureRequest {
 	offsetDateTime: string;        
 	email: string;
 }
+
+export interface DeleteMeasureRequest {
+	measureId: string;    
+	email: string;
+}
