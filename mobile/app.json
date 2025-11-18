@@ -1,14 +1,15 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Glic",
+    "slug": "glic",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./src/assets/splashscreen.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#FFFFFF"
     },
     "ios": {
       "supportsTablet": true
@@ -19,7 +20,13 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.rgestevao.mobile"
+      "package": "com.rgestevao.mobile",
+      "icon": "./src/assets/icon.png",
+      "splash": {
+        "image": "./src/assets/splashscreen.png",
+        "resizeMode": "cover",
+        "backgroundColor": "#FFFFFF"
+      }
     },
     "web": {},
     "plugins": [
@@ -27,8 +34,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "aa5c4126-432f-4804-9950-c9c41c0ad0ed"
+        "projectId": "9e8790b6-81d7-4655-8837-1540b25654c1"
       }
-    }
+    },
+    "owner": "rgestevao"
   }
 }
