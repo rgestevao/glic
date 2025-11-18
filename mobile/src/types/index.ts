@@ -50,3 +50,16 @@ export interface MeasureResponse {
 	status: string;
     userId: string;
 }
+
+export interface AddMeasureRequest {
+	value: number;
+	email: string;
+}	
+
+export interface AddMeasureResponse {
+	measureId: string;
+	value: number;
+	dateCreation: string;        
+	status: string;
+	userId: string;
+}

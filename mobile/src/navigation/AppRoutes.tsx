@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import AddMeasure from '../screens/AddMeasure'
 import ForgotPassword from '../screens/ForgotPassword'
 import Home from '../screens/Home'
 import ListMeasures from '../screens/ListMeasures'
@@ -24,6 +25,7 @@ export default function AppRoutes() {
 				<Stack.Screen name="Home" component={Home} />
 				<Stack.Screen name="Search" component={Search} />
 				<Stack.Screen name="ListMeasures" component={ListMeasures} />
+				<Stack.Screen name="AddMeasure" component={AddMeasure} />
 			</Stack.Navigator>
 		</NavigationContainer>
 	)

@@ -10,7 +10,7 @@ export default function NavBar() {
 
 	const items = [
 		{ key: 'Home', label: 'Início', icon: 'home' },
-		{ key: 'Add', label: 'Adicionar', icon: 'plus-circle' },
+		{ key: 'AddMeasure', label: 'Adicionar', icon: 'plus-circle' },
 		{ key: 'Search', label: 'Pesquisar', icon: 'search' },
 	]
 
