@@ -3,20 +3,30 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
+import { jwtDecode } from 'jwt-decode'
 import { useState } from 'react'
 import {
 	ActivityIndicator,
+	Keyboard,
+	KeyboardAvoidingView,
+	Platform,
 	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
 	TouchableOpacity,
+	TouchableWithoutFeedback,
 	View,
 } from 'react-native'
 import NavBar from '../../components/NavBar'
 import { api } from '../../services/api'
 import { Colors } from '../../styles/colors'
 import type { MeasureResponse } from '../../types'
+
+type JwtPayload = {
+	sub: string
+}
 
 export default function Search() {
 	const [measures, setMeasures] = useState<MeasureResponse[] | null>(null)
@@ -70,6 +80,7 @@ export default function Search() {
 				from?: string
 				to?: string
 				status?: string
+				email?: string
 			} = {}
 
 			if (startDate && isValidBrDate(startDate)) {
@@ -84,6 +95,10 @@ export default function Search() {
 
 			if (status) {
 				payload.status = status
+			}
+
+			if (token) {
+				payload.email = jwtDecode<JwtPayload>(token).sub
 			}
 
 			const response = await api.get<MeasureResponse[]>('/measures', {
@@ -105,106 +120,116 @@ export default function Search() {
 	}
 
 	return (
-		<View style={styles.container}>
-			<Text style={styles.title}>Consulta de Medidas</Text>
+		<KeyboardAvoidingView
+			style={{ flex: 1 }}
+			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+		>
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+				<ScrollView
+					contentContainerStyle={styles.container}
+					keyboardShouldPersistTaps="handled"
+				>
+					<Text style={styles.title}>Consulta de Medidas</Text>
 
-			<View style={styles.dateFilterContainer}>
-				<Text>Data:</Text>
-				<View style={styles.dateFilterInputsContainer}>
-					<View style={styles.dateFilterInputContainer}>
-						<Feather name="calendar" size={16} color={Colors.Grey300} />
-						<TextInput
-							placeholder="dd/MM/yyyy"
-							placeholderTextColor={Colors.Grey300}
-							value={startDate}
-							onChangeText={(t) => setStartDate(formatDate(t))}
-							keyboardType="numeric"
-							style={styles.dateFilterButtonText}
-						/>
+					<View style={styles.dateFilterContainer}>
+						<Text>Data:</Text>
+						<View style={styles.dateFilterInputsContainer}>
+							<View style={styles.dateFilterInputContainer}>
+								<Feather name="calendar" size={16} color={Colors.Grey300} />
+								<TextInput
+									placeholder="dd/MM/yyyy"
+									placeholderTextColor={Colors.Grey300}
+									value={startDate}
+									onChangeText={(t) => setStartDate(formatDate(t))}
+									keyboardType="numeric"
+									style={styles.dateFilterButtonText}
+								/>
+							</View>
+
+							<View style={styles.dateFilterInputContainer}>
+								<Feather name="calendar" size={16} color={Colors.Grey300} />
+								<TextInput
+									placeholder="dd/MM/yyyy"
+									placeholderTextColor={Colors.Grey300}
+									value={endDate}
+									onChangeText={(t) => setEndDate(formatDate(t))}
+									keyboardType="numeric"
+									style={styles.dateFilterButtonText}
+								/>
+							</View>
+						</View>
 					</View>
 
-					<View style={styles.dateFilterInputContainer}>
-						<Feather name="calendar" size={16} color={Colors.Grey300} />
-						<TextInput
-							placeholder="dd/MM/yyyy"
-							placeholderTextColor={Colors.Grey300}
-							value={endDate}
-							onChangeText={(t) => setEndDate(formatDate(t))}
-							keyboardType="numeric"
-							style={styles.dateFilterButtonText}
-						/>
+					<View style={styles.statusFilterButtonsContainer}>
+						<TouchableOpacity
+							onPress={() => setStatus('LOW')}
+							style={[
+								styles.statusFilterButton,
+								status === 'LOW' && styles.statusFilterButtonActive,
+							]}
+						>
+							<Text
+								style={[
+									styles.statusFilterButtonText,
+									status === 'LOW' && styles.statusFilterButtonTextActive,
+								]}
+							>
+								Baixo
+							</Text>
+						</TouchableOpacity>
+
+						<TouchableOpacity
+							onPress={() => setStatus('NORMAL')}
+							style={[
+								styles.statusFilterButton,
+								status === 'NORMAL' && styles.statusFilterButtonActive,
+							]}
+						>
+							<Text
+								style={[
+									styles.statusFilterButtonText,
+									status === 'NORMAL' && styles.statusFilterButtonTextActive,
+								]}
+							>
+								Normal
+							</Text>
+						</TouchableOpacity>
+
+						<TouchableOpacity
+							onPress={() => setStatus('HIGH')}
+							style={[
+								styles.statusFilterButton,
+								status === 'HIGH' && styles.statusFilterButtonActive,
+							]}
+						>
+							<Text
+								style={[
+									styles.statusFilterButtonText,
+									status === 'HIGH' && styles.statusFilterButtonTextActive,
+								]}
+							>
+								Alto
+							</Text>
+						</TouchableOpacity>
 					</View>
-				</View>
-			</View>
 
-			<View style={styles.statusFilterButtonsContainer}>
-				<TouchableOpacity
-					onPress={() => setStatus('LOW')}
-					style={[
-						styles.statusFilterButton,
-						status === 'LOW' && styles.statusFilterButtonActive,
-					]}
-				>
-					<Text
-						style={[
-							styles.statusFilterButtonText,
-							status === 'LOW' && styles.statusFilterButtonTextActive,
-						]}
-					>
-						Baixo
-					</Text>
-				</TouchableOpacity>
-
-				<TouchableOpacity
-					onPress={() => setStatus('NORMAL')}
-					style={[
-						styles.statusFilterButton,
-						status === 'NORMAL' && styles.statusFilterButtonActive,
-					]}
-				>
-					<Text
-						style={[
-							styles.statusFilterButtonText,
-							status === 'NORMAL' && styles.statusFilterButtonTextActive,
-						]}
-					>
-						Normal
-					</Text>
-				</TouchableOpacity>
-
-				<TouchableOpacity
-					onPress={() => setStatus('HIGH')}
-					style={[
-						styles.statusFilterButton,
-						status === 'HIGH' && styles.statusFilterButtonActive,
-					]}
-				>
-					<Text
-						style={[
-							styles.statusFilterButtonText,
-							status === 'HIGH' && styles.statusFilterButtonTextActive,
-						]}
-					>
-						Alto
-					</Text>
-				</TouchableOpacity>
-			</View>
-
-			<Pressable onPress={fetchMeasures} style={styles.button}>
-				{loading ? (
-					<ActivityIndicator color={Colors.White100} />
-				) : (
-					<Text style={styles.textButton}>Consultar Marcações</Text>
-				)}
-			</Pressable>
-			<NavBar />
-		</View>
+					<Pressable onPress={fetchMeasures} style={styles.button}>
+						{loading ? (
+							<ActivityIndicator color={Colors.White100} />
+						) : (
+							<Text style={styles.textButton}>Consultar Marcações</Text>
+						)}
+					</Pressable>
+					<NavBar />
+				</ScrollView>
+			</TouchableWithoutFeedback>
+		</KeyboardAvoidingView>
 	)
 }
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		flexGrow: 1,
 		backgroundColor: Colors.White100,
 		padding: 24,
 		gap: 16,

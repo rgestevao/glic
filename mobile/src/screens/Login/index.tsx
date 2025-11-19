@@ -6,10 +6,15 @@ import {
 	ActivityIndicator,
 	Alert,
 	Image,
+	Keyboard,
+	KeyboardAvoidingView,
+	Platform,
 	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
+	TouchableWithoutFeedback,
 	View,
 } from 'react-native'
 import { api } from '../../services/api'
@@ -52,77 +57,87 @@ export default function Login() {
 	}
 
 	return (
-		<View style={styles.container}>
-			<Image
-				source={require('../../assets/Logo.png')}
-				width={300}
-				height={300}
-			/>
-
-			<Text style={styles.title}>Seu bem-estar começa aqui.</Text>
-
-			<Text style={styles.label}>E-mail</Text>
-			<TextInput
-				style={styles.input}
-				placeholder="Digite seu e-mail"
-				placeholderTextColor={Colors.Grey300}
-				autoCapitalize="none"
-				keyboardType="email-address"
-				value={email}
-				onChangeText={setEmail}
-			/>
-
-			<Text style={styles.label}>Senha</Text>
-			<View>
-				<TextInput
-					style={styles.input}
-					placeholder="Digite sua senha"
-					secureTextEntry={!showPassword}
-					placeholderTextColor={Colors.Grey300}
-					value={password}
-					onChangeText={setPassword}
-				/>
-
-				<Pressable
-					style={styles.icon}
-					onPress={() => setShowPassword(!showPassword)}
+		<KeyboardAvoidingView
+			style={{ flex: 1 }}
+			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+		>
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+				<ScrollView
+					contentContainerStyle={styles.container}
+					keyboardShouldPersistTaps="handled"
 				>
-					<Feather
-						name={showPassword ? 'eye' : 'eye-off'}
-						size={24}
-						color={Colors.Black900}
+					<Image
+						source={require('../../assets/Logo.png')}
+						width={300}
+						height={300}
 					/>
-				</Pressable>
-			</View>
 
-			<Pressable
-				style={styles.forgotPasswordLinkContainer}
-				onPress={() => navigation.navigate('ForgotPassword')}
-			>
-				<Text style={styles.link}>Esqueceu sua senha?</Text>
-			</Pressable>
+					<Text style={styles.title}>Seu bem-estar começa aqui.</Text>
 
-			<Pressable style={styles.button} onPress={handleLogin}>
-				{loading ? (
-					<ActivityIndicator color={Colors.White100} />
-				) : (
-					<Text style={styles.textButton}>Entrar</Text>
-				)}
-			</Pressable>
+					<Text style={styles.label}>E-mail</Text>
+					<TextInput
+						style={styles.input}
+						placeholder="Digite seu e-mail"
+						placeholderTextColor={Colors.Grey300}
+						autoCapitalize="none"
+						keyboardType="email-address"
+						value={email}
+						onChangeText={setEmail}
+					/>
 
-			<Pressable
-				style={styles.createAccountLinkContainer}
-				onPress={() => navigation.navigate('Register')}
-			>
-				<Text style={styles.link}>Não possui uma conta?</Text>
-			</Pressable>
-		</View>
+					<Text style={styles.label}>Senha</Text>
+					<View>
+						<TextInput
+							style={styles.input}
+							placeholder="Digite sua senha"
+							secureTextEntry={!showPassword}
+							placeholderTextColor={Colors.Grey300}
+							value={password}
+							onChangeText={setPassword}
+						/>
+
+						<Pressable
+							style={styles.icon}
+							onPress={() => setShowPassword(!showPassword)}
+						>
+							<Feather
+								name={showPassword ? 'eye' : 'eye-off'}
+								size={24}
+								color={Colors.Black900}
+							/>
+						</Pressable>
+					</View>
+
+					<Pressable
+						style={styles.forgotPasswordLinkContainer}
+						onPress={() => navigation.navigate('ForgotPassword')}
+					>
+						<Text style={styles.link}>Esqueceu sua senha?</Text>
+					</Pressable>
+
+					<Pressable style={styles.button} onPress={handleLogin}>
+						{loading ? (
+							<ActivityIndicator color={Colors.White100} />
+						) : (
+							<Text style={styles.textButton}>Entrar</Text>
+						)}
+					</Pressable>
+
+					<Pressable
+						style={styles.createAccountLinkContainer}
+						onPress={() => navigation.navigate('Register')}
+					>
+						<Text style={styles.link}>Não possui uma conta?</Text>
+					</Pressable>
+				</ScrollView>
+			</TouchableWithoutFeedback>
+		</KeyboardAvoidingView>
 	)
 }
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		flexGrow: 1,
 		backgroundColor: Colors.White100,
 		justifyContent: 'center',
 		paddingHorizontal: 24,

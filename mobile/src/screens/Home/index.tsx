@@ -43,6 +43,7 @@ export default function Home() {
 				const payload = {
 					from: start.toISOString(),
 					to: end.toISOString(),
+					email: token ? jwtDecode<JwtPayload>(token).sub : '',
 				}
 
 				const response = await api.get<MeasureResponse[]>('/measures', {
@@ -216,28 +217,24 @@ export default function Home() {
 					visible={showDeleteModal}
 					onRequestClose={closeDeleteModal}
 				>
-					<View style={styles.modalRoot}>
-						<View style={styles.modalOverlay}>
-							<View style={styles.modalCard}>
-								<Text style={styles.modalTitle}>
-									Deseja remover a marcação?
-								</Text>
+					<View style={styles.modalOverlay}>
+						<View style={styles.modalCard}>
+							<Text style={styles.modalTitle}>Deseja remover a marcação?</Text>
 
-								<View style={styles.modalButtonsRow}>
-									<Pressable
-										style={[styles.modalButton, styles.modalCancelButton]}
-										onPress={closeDeleteModal}
-									>
-										<Text style={styles.modalCancelText}>Cancelar</Text>
-									</Pressable>
+							<View style={styles.modalButtonsRow}>
+								<Pressable
+									style={[styles.modalButton, styles.modalCancelButton]}
+									onPress={closeDeleteModal}
+								>
+									<Text style={styles.modalCancelText}>Cancelar</Text>
+								</Pressable>
 
-									<Pressable
-										style={[styles.modalButton, styles.modalConfirmButton]}
-										onPress={handleConfirmDelete}
-									>
-										<Text style={styles.modalConfirmText}>Confirmar</Text>
-									</Pressable>
-								</View>
+								<Pressable
+									style={[styles.modalButton, styles.modalConfirmButton]}
+									onPress={handleConfirmDelete}
+								>
+									<Text style={styles.modalConfirmText}>Confirmar</Text>
+								</Pressable>
 							</View>
 						</View>
 					</View>
@@ -446,9 +443,10 @@ const styles = StyleSheet.create({
 		fontFamily: 'Sora_600SemiBold',
 		fontSize: 14,
 	},
+
 	modalOverlay: {
-		flex: 1,
-		backgroundColor: 'rgba(0, 0, 0, 0.25)', // fundo escuro translúcido
+		flex: 1, // em vez de position absolute
+		backgroundColor: 'rgba(0, 0, 0, 0.25)',
 		justifyContent: 'center',
 		alignItems: 'center',
 	},

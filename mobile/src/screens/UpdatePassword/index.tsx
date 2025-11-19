@@ -5,10 +5,15 @@ import {
 	ActivityIndicator,
 	Alert,
 	Image,
+	Keyboard,
+	KeyboardAvoidingView,
+	Platform,
 	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
+	TouchableWithoutFeedback,
 	View,
 } from 'react-native'
 import { api } from '../../services/api'
@@ -60,91 +65,101 @@ export default function UpdatePassword() {
 	}
 
 	return (
-		<View style={styles.container}>
-			<Image
-				source={require('../../assets/Logo.png')}
-				width={300}
-				height={300}
-			/>
-
-			<Text style={styles.title}>
-				Mais controle, mais liberdade. Comece agora.
-			</Text>
-
-			<Text style={styles.label}>Senha</Text>
-			<View>
-				<TextInput
-					style={styles.input}
-					placeholder="Digite sua senha"
-					secureTextEntry={!showPassword}
-					placeholderTextColor={Colors.Grey300}
-					value={password}
-					onChangeText={setPassword}
-				/>
-
-				<Pressable
-					style={styles.icon}
-					onPress={() => setShowPassword(!showPassword)}
+		<KeyboardAvoidingView
+			style={{ flex: 1 }}
+			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+		>
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+				<ScrollView
+					contentContainerStyle={styles.container}
+					keyboardShouldPersistTaps="handled"
 				>
-					<Feather
-						name={showPassword ? 'eye' : 'eye-off'}
-						size={24}
-						color={Colors.Black900}
+					<Image
+						source={require('../../assets/Logo.png')}
+						width={300}
+						height={300}
 					/>
-				</Pressable>
-			</View>
 
-			<Text style={styles.label}>Confirmar senha</Text>
-			<View>
-				<TextInput
-					style={styles.input}
-					placeholder="Digite sua senha"
-					secureTextEntry={!showConfirmPassword}
-					placeholderTextColor={Colors.Grey300}
-					value={confirmPassword}
-					onChangeText={setConfirmPassword}
-				/>
+					<Text style={styles.title}>
+						Mais controle, mais liberdade. Comece agora.
+					</Text>
 
-				<Pressable
-					style={styles.icon}
-					onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-				>
-					<Feather
-						name={showConfirmPassword ? 'eye' : 'eye-off'}
-						size={24}
-						color={Colors.Black900}
-					/>
-				</Pressable>
-			</View>
+					<Text style={styles.label}>Senha</Text>
+					<View>
+						<TextInput
+							style={styles.input}
+							placeholder="Digite sua senha"
+							secureTextEntry={!showPassword}
+							placeholderTextColor={Colors.Grey300}
+							value={password}
+							onChangeText={setPassword}
+						/>
 
-			<Pressable
-				style={[
-					styles.button,
-					(!canSubmit || loading) && styles.buttonDisabled,
-				]}
-				onPress={handleRegister}
-				disabled={!canSubmit || loading}
-			>
-				{loading ? (
-					<ActivityIndicator color={Colors.White100} />
-				) : (
-					<Text style={styles.textButton}>Atualizar Senha</Text>
-				)}
-			</Pressable>
+						<Pressable
+							style={styles.icon}
+							onPress={() => setShowPassword(!showPassword)}
+						>
+							<Feather
+								name={showPassword ? 'eye' : 'eye-off'}
+								size={24}
+								color={Colors.Black900}
+							/>
+						</Pressable>
+					</View>
 
-			<Pressable
-				style={styles.createAccountLinkContainer}
-				onPress={() => navigation.navigate('Login')}
-			>
-				<Text style={styles.link}>Já possui uma conta?</Text>
-			</Pressable>
-		</View>
+					<Text style={styles.label}>Confirmar senha</Text>
+					<View>
+						<TextInput
+							style={styles.input}
+							placeholder="Digite sua senha"
+							secureTextEntry={!showConfirmPassword}
+							placeholderTextColor={Colors.Grey300}
+							value={confirmPassword}
+							onChangeText={setConfirmPassword}
+						/>
+
+						<Pressable
+							style={styles.icon}
+							onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+						>
+							<Feather
+								name={showConfirmPassword ? 'eye' : 'eye-off'}
+								size={24}
+								color={Colors.Black900}
+							/>
+						</Pressable>
+					</View>
+
+					<Pressable
+						style={[
+							styles.button,
+							(!canSubmit || loading) && styles.buttonDisabled,
+						]}
+						onPress={handleRegister}
+						disabled={!canSubmit || loading}
+					>
+						{loading ? (
+							<ActivityIndicator color={Colors.White100} />
+						) : (
+							<Text style={styles.textButton}>Atualizar Senha</Text>
+						)}
+					</Pressable>
+
+					<Pressable
+						style={styles.createAccountLinkContainer}
+						onPress={() => navigation.navigate('Login')}
+					>
+						<Text style={styles.link}>Já possui uma conta?</Text>
+					</Pressable>
+				</ScrollView>
+			</TouchableWithoutFeedback>
+		</KeyboardAvoidingView>
 	)
 }
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		flexGrow: 1,
 		backgroundColor: Colors.White100,
 		justifyContent: 'center',
 		paddingHorizontal: 24,

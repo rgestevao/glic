@@ -4,10 +4,15 @@ import { jwtDecode } from 'jwt-decode'
 import { useState } from 'react'
 import {
 	ActivityIndicator,
+	Keyboard,
+	KeyboardAvoidingView,
+	Platform,
 	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
+	TouchableWithoutFeedback,
 	View,
 } from 'react-native'
 import NavBar from '../../components/NavBar'
@@ -52,57 +57,69 @@ export default function AddMeasure() {
 	}
 
 	return (
-		<View style={styles.container}>
-			<Text style={styles.title}>Cadastro de Glicemia</Text>
+		<KeyboardAvoidingView
+			style={{ flex: 1 }}
+			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+		>
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+				<ScrollView
+					contentContainerStyle={styles.container}
+					keyboardShouldPersistTaps="handled"
+				>
+					<Text style={styles.title}>Cadastro de Glicemia</Text>
 
-			<View style={styles.measureValueContainer}>
-				<Text style={styles.measureValueText}>Valor da Glicemia</Text>
-				<View style={styles.measureValueInputContainer}>
-					<TextInput
-						keyboardType="numeric"
-						placeholder="000"
-						style={styles.measureValueInput}
-						maxLength={3}
-						value={Number.isNaN(addMeasureValue) ? '' : String(addMeasureValue)}
-						onChangeText={(text) => setAddMeasureValue(Number(text))}
-					/>
-					<Text style={styles.measureValueUnit}>mg/dL</Text>
-				</View>
-			</View>
+					<View style={styles.measureValueContainer}>
+						<Text style={styles.measureValueText}>Valor da Glicemia</Text>
+						<View style={styles.measureValueInputContainer}>
+							<TextInput
+								keyboardType="numeric"
+								placeholder="000"
+								style={styles.measureValueInput}
+								maxLength={3}
+								value={
+									Number.isNaN(addMeasureValue) ? '' : String(addMeasureValue)
+								}
+								onChangeText={(text) => setAddMeasureValue(Number(text))}
+							/>
+							<Text style={styles.measureValueUnit}>mg/dL</Text>
+						</View>
+					</View>
 
-			<View style={styles.infoStatusContainer}>
-				<View style={styles.infoStatusItem}>
-					<Text style={styles.infoStatusItemText}>
-						Valores menores que 70 são considerados baixos. (Hipoglicemia)
-					</Text>
-				</View>
-				<View style={styles.infoStatusItem}>
-					<Text style={styles.infoStatusItemText}>
-						Valores entre 70 e 180 são valores considerados normais.
-					</Text>
-				</View>
-				<View style={styles.infoStatusItem}>
-					<Text style={styles.infoStatusItemText}>
-						Valores acima de 180 são considerados altos. (Hiperglicemia).
-					</Text>
-				</View>
-			</View>
+					<View style={styles.infoStatusContainer}>
+						<View style={styles.infoStatusItem}>
+							<Text style={styles.infoStatusItemText}>
+								Valores menores que 70 são considerados baixos. (Hipoglicemia)
+							</Text>
+						</View>
+						<View style={styles.infoStatusItem}>
+							<Text style={styles.infoStatusItemText}>
+								Valores entre 70 e 180 são valores considerados normais.
+							</Text>
+						</View>
+						<View style={styles.infoStatusItem}>
+							<Text style={styles.infoStatusItemText}>
+								Valores acima de 180 são considerados altos. (Hiperglicemia).
+							</Text>
+						</View>
+					</View>
 
-			<Pressable onPress={addMeasure} style={styles.button}>
-				{loading ? (
-					<ActivityIndicator color={Colors.White100} />
-				) : (
-					<Text style={styles.textButton}>Cadastrar Marcação</Text>
-				)}
-			</Pressable>
-			<NavBar />
-		</View>
+					<Pressable onPress={addMeasure} style={styles.button}>
+						{loading ? (
+							<ActivityIndicator color={Colors.White100} />
+						) : (
+							<Text style={styles.textButton}>Cadastrar Marcação</Text>
+						)}
+					</Pressable>
+					<NavBar />
+				</ScrollView>
+			</TouchableWithoutFeedback>
+		</KeyboardAvoidingView>
 	)
 }
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		flexGrow: 1,
 		backgroundColor: Colors.White100,
 		padding: 24,
 		gap: 16,
